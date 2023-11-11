@@ -32,49 +32,58 @@ void loop() {
   Objeto.inHumedad = analogRead(A1);
 
   if(inputString=="sInformacion"){
-  if(Objeto.inTemperatura < 30){ 
+
+    if(Objeto.inTemperatura < 30){ 
     digitalWrite(rCaloventor,HIGH);
     outputString="eCaloventor";
     }
-  if(Objeto.inTemperatura>= 30){
+    if(Objeto.inTemperatura>= 30){
     digitalWrite(rCaloventor,LOW);
     outputString="aCaloventor";
     }
+
+  delay(100);
   serialOUT();
-  if(Objeto.inHumedad<200){ 
+
+    if(Objeto.inHumedad<200){ 
     digitalWrite(rElectrovalvula,HIGH);
     outputString="eElectrovalvula";
     }
-  if(Objeto.inHumedad>=200){
+    if(Objeto.inHumedad>=200){
     digitalWrite(rElectrovalvula,LOW);
     outputString="aElectrovalvula";
     }
+
   serialOUT();
   }
-  
   else{
+    
     if(inputString == "eCaloventor"){
       digitalWrite(rCaloventor,HIGH);
       outputString="eCaloventor";
       serialOUT();
+      delay(100);
     }
-    else if(inputString == "aCaloventor"){
+    if(inputString == "aCaloventor"){
       digitalWrite(rCaloventor,LOW);
       outputString="aCaloventor";
       serialOUT();
+      delay(100);
     }
-    else if(inputString == "eElectrovalvula"){
+    if(inputString == "eElectrovalvula"){
       digitalWrite(rElectrovalvula,HIGH);
-      outputString="eEletrovalvula";
+      outputString="eElectrovalvula";
       serialOUT();
+      delay(100);
     }
-    else if(inputString == "aElectrovalvula"){
+    if(inputString == "aElectrovalvula"){
       digitalWrite(rElectrovalvula,LOW);
-      outputString="aEletrovalvula";
+      outputString="aElectrovalvula";
       serialOUT();
+      delay(100);
     }
   }
-  delay(1000);
+  delay(200);
 }
 
 void serialIN() {

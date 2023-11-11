@@ -51,7 +51,7 @@ void draw(){
   if(inputString == "eCaloventor"){
   fill(0, 255, 0);
   ellipse(200, 190, 70, 70);
-  text("Prueba",450,250);
+  //text("Prueba",450,250);
   }
   if(inputString == "aCaloventor"){
   fill(255, 0, 0);
@@ -73,19 +73,19 @@ void draw(){
   switch(nivel){
 
   case 1:
-    outputString = "eCaloventor\n";
+    outputString = "eCaloventor";
     break;
   case 2:
-   outputString = "aCaloventor\n";
+   outputString = "aCaloventor";
    break;
   case 3:
-   outputString = "eElectrovalvula\n";
+   outputString = "eElectrovalvula";
    break;
   case 4:
-   outputString = "aElectrovalvula\n";
+   outputString = "aElectrovalvula";
    break;
   case 5:
-   outputString = "sInformacion\n";
+   outputString = "sInformacion";
    break;
   }
   
@@ -114,9 +114,10 @@ int cuatrobotones () {
   return 5;      
 }
  
- void serialIn(){    
+ void serialIn(){  
+ delay(50);
  while (myPort.available()>0){
-   text("Prueba",450,250);
+  // text("Prueba",450,250);
    inputString = "";
    while(stringComplete != true){ 
     char inChar = (char)myPort.read();
@@ -133,13 +134,15 @@ int cuatrobotones () {
  }
  
  void serialOut(){
+  delay(50);
   myPort.write(outputString);
+  myPort.write(ENTER);
   printpuertos();
  }
  
  void printpuertos(){
  fill(0,0,0);
- text("Output: "+outputString,30,465); //este no funciona
+ text("Output: "+outputString,30,465); 
  text("Input: "+inputString,30,440);
  }
     
