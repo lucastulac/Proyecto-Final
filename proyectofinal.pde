@@ -51,7 +51,7 @@ void draw(){
   if(inputString == "eCaloventor"){
   fill(0, 255, 0);
   ellipse(200, 190, 70, 70);
-  //text("Prueba",450,250);
+  text("Prueba",450,250);
   }
   if(inputString == "aCaloventor"){
   fill(255, 0, 0);
@@ -117,7 +117,6 @@ int cuatrobotones () {
  void serialIn(){  
  delay(50);
  while (myPort.available()>0){
-  // text("Prueba",450,250);
    inputString = "";
    while(stringComplete != true){ 
     char inChar = (char)myPort.read();
