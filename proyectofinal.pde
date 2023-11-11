@@ -1,17 +1,16 @@
 import processing.serial.*;
 
 PImage logo;
-int contA=0; //variable para pruebas
-int contB=0; //variable para pruebas
 char inChar;
 int nivel;
 String inputString = "";        
-String outputString = "";         
+String outputString = "";   
 boolean stringComplete = false;
+Serial myPort;
 
 void setup(){
   
-  Serial myPort;
+  
   
   size(900, 500);
   PFont myFont = createFont(PFont.list()[3], 35);
@@ -25,26 +24,16 @@ void setup(){
 void draw(){
   background(245, 245, 220);
   
-  /*if(contA==0){
-     contA++;
-     inputString = "eElectrovalvula";        //pruebaaaa
-  }else{
-     contA=0;
-     inputString = "aElectrovalvula";
-  }*/
-  
   textSize(35);
   fill(0, 0, 0);
   text("INVERNADERO", 300, 50);
-  text("CALEFACCION",70,140);
-  text("RIEGO",650,140);
-  
-  text(inputString,300,300);
+  text("CALEFACCION",70,140);        //dibujo de los textos
+  text("RIEGO",650,140); 
   
   fill(0, 0, 0);
   textSize(20);
   text("ENCENDIDO",160,320);
-  text("APAGADO",160,350);
+  text("APAGADO",160,350);        //dibujo de textos
   text("ENCENDIDO",670,320);
   text("APAGADO",670,350);
   
@@ -57,61 +46,50 @@ void draw(){
   
   image(logo, 750, 450);
   
-  /*if(myPort.available()>0){
-  inputString = "";
-     while(myPort.read()!='\n'){          //manejo del p.serie
-        inChar = (char)myPort.read();
-        inputString += inChar;
-     }
-  }*/
-  
-  delay(1000);
-  
-  if(inputString == "eElectrovalvula"){
-  fill(255, 0, 0);
-  ellipse(710, 190, 70, 70);
-  }else if(inputString == "aElectrovalvula"){
-  fill(0, 255, 0);
-  ellipse(710, 190, 70, 70);
-  }
-  
-  /*if(myPort.available()>0){
-  inputString = "";
-     while(myPort.read()!='\n'){            //manejo del p.serie
-        inChar = (char)myPort.read();
-        inputString += inChar;
-     }
-  }*/
-  
-  /*if(contB==0){
-     contB++;
-     inputString = "eCaloventor";
-  }else{                                  //pruebaa
-     contB=0;
-     inputString = "aCaloventor";
-  }*/
-  
-  delay(1000);
+  serialIn();
   
   if(inputString == "eCaloventor"){
   fill(0, 255, 0);
   ellipse(200, 190, 70, 70);
-  }else if(inputString == "aCaloventor"){
+  text("Prueba",450,250);
+  }
+  if(inputString == "aCaloventor"){
   fill(255, 0, 0);
   ellipse(200, 190, 70, 70);
   }
   
+  serialIn();
+  
+  if(inputString == "eElectrovalvula"){
+  fill(255, 0, 0);
+  ellipse(710, 190, 70, 70);
+  }
+  if(inputString == "aElectrovalvula"){
+  fill(0, 255, 0);
+  ellipse(710, 190, 70, 70);
+  }
+   
   nivel=cuatrobotones();
   switch(nivel){
+
   case 1:
-    outputString = "eCaloventor";
+    outputString = "eCaloventor\n";
+    break;
   case 2:
-   outputString = "aCaloventor";
+   outputString = "aCaloventor\n";
+   break;
   case 3:
-   outputString = "eElectrovalvula";
+   outputString = "eElectrovalvula\n";
+   break;
   case 4:
-   outputString = "aElectrovalvula";
+   outputString = "aElectrovalvula\n";
+   break;
+  case 5:
+   outputString = "sInformacion\n";
+   break;
   }
+  
+  serialOut(); 
 }
 
 boolean enRect(int x, int y, int ancho, int alto)  {
@@ -133,17 +111,35 @@ int cuatrobotones () {
 }else if (enRect (650,335,15,15) && mousePressed ){   //apagado de la valvula
   return 4;
 }
-  return 0;      
+  return 5;      
 }
-
-void serialEvent(Serial myPort) {
-    
-   if(myPort.available()>0){
-     inputString = "";
-      while(myPort.read()!='\n'){
-         inChar = (char)myPort.read();
-         inputString += inChar;
-      }
-   }
+ 
+ void serialIn(){    
+ while (myPort.available()>0){
+   text("Prueba",450,250);
+   inputString = "";
+   while(stringComplete != true){ 
+    char inChar = (char)myPort.read();
+     if (inChar != '\n') {
+      inputString += inChar;
+     }
+    else if (inChar == '\n') {
+      stringComplete = true;
+     }
+    }
+    stringComplete = false;
+  }
+  printpuertos();
+ }
+ 
+ void serialOut(){
+  myPort.write(outputString);
+  printpuertos();
+ }
+ 
+ void printpuertos(){
+ fill(0,0,0);
+ text("Output: "+outputString,30,465); //este no funciona
+ text("Input: "+inputString,30,440);
  }
     
