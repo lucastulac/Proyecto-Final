@@ -1,4 +1,6 @@
 import processing.serial.*;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 PImage logo;
 char inChar;
@@ -6,6 +8,9 @@ int nivel;
 String inputString = "";        
 String outputString = "";   
 boolean stringComplete = false;
+String lines[];
+int tiempoEntreRegistros = 5000; // Pausa de 5 segundos entre registros
+int tiempoUltimoRegistro;
 Serial myPort;
 
 void setup(){
@@ -15,9 +20,11 @@ void setup(){
   size(900, 500);
   PFont myFont = createFont(PFont.list()[3], 35);
   textFont(myFont);
+  lines = new String[0];
   logo = loadImage("logo-utn.png");
   logo.resize(200, 50);
   myPort = new Serial(this, "COM4", 9600);
+  tiempoUltimoRegistro = millis();
 
 }
 
@@ -45,26 +52,27 @@ void draw(){
   rect(650,335,15,15);        //apagado de la valvula
   
   image(logo, 750, 450);
-  
   serialIn();
+  cargaArchivo(inputString);
   
   if(inputString == "eCaloventor"){
   fill(0, 255, 0);
   ellipse(200, 190, 70, 70);
   text("Prueba",450,250);
   }
-  if(inputString == "aCaloventor"){
+  else if(inputString == "aCaloventor"){
   fill(255, 0, 0);
   ellipse(200, 190, 70, 70);
   }
   
   serialIn();
+  cargaArchivo(inputString);
   
   if(inputString == "eElectrovalvula"){
   fill(255, 0, 0);
   ellipse(710, 190, 70, 70);
   }
-  if(inputString == "aElectrovalvula"){
+  else if(inputString == "aElectrovalvula"){
   fill(0, 255, 0);
   ellipse(710, 190, 70, 70);
   }
@@ -144,4 +152,18 @@ int cuatrobotones () {
  text("Output: "+outputString,30,465); 
  text("Input: "+inputString,30,440);
  }
-    
+ 
+ void cargaArchivo(String evento) {
+  
+  if (millis() - tiempoUltimoRegistro >= tiempoEntreRegistros) { 
+    Date hora = new Date();  // Obtener la fecha y la hora actual
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  // Formatear la fecha y hora en un formato legible
+    String horaformateada = dateFormat.format(hora);
+    String registro = horaformateada + " - " + evento;    // Construir la línea a escribir en el archivo
+  
+    lines = append(lines, registro);    // Escribir la línea en el arreglo de strings 
+    saveStrings("registro-invernadero.txt", lines);  //Guardar el arreglo en el archivo
+    tiempoUltimoRegistro = millis();
+  }
+}   

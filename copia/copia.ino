@@ -27,11 +27,11 @@ void setup() {
 void loop() {
 
   DHT.read11(DHT11_PIN);
-  serialIN();                         //700 es temp. ambiente aprox            
+  serialIN();                                    
   Objeto.inTemperatura = DHT.temperature;    
   Objeto.inHumedad = analogRead(A1);
 
-  if(inputString=="sInformacion"){
+  if(inputString=="sInformacion"){ //si en processing no se aprieta ningun boton, los reles los manejan los sensores
 
     if(Objeto.inTemperatura < 30){ 
     digitalWrite(rCaloventor,HIGH);
@@ -56,8 +56,8 @@ void loop() {
 
   serialOUT();
   }
-  else{
-    
+  else{ //si inputString es distinto de "sInformacion" es pq en processing se estan tocando los botones, osea, los sensores ya no manejan
+        //los reles
     if(inputString == "eCaloventor"){
       digitalWrite(rCaloventor,HIGH);
       outputString="eCaloventor";
