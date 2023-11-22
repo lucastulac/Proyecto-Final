@@ -8,6 +8,8 @@ int nivel;
 String inputString = "";        
 String outputString = "";   
 boolean stringComplete = false;
+String electrovalvula = "";
+String caloventor = "";
 String lines[];
 int tiempoEntreRegistros = 5000; // Pausa de 5 segundos entre registros
 int tiempoUltimoRegistro;
@@ -52,30 +54,30 @@ void draw(){
   rect(650,335,15,15);        //apagado de la valvula
   
   image(logo, 750, 450);
+  
   serialIn();
+  printpuertos();
   cargaArchivo(inputString);
-   
-  println(inputString);
      
-  if(inputString == "eElectrovalvula"){
+  if(caloventor.equals("ON")){
   fill(0, 255, 0);
   ellipse(200, 190, 70, 70);
-  text("Prueba",450,250);
   }
-  else if(inputString == "aElectrovalvula"){
+  if(caloventor.equals("OFF")){
   fill(255, 0, 0);
   ellipse(200, 190, 70, 70);
   }
   
   serialIn();
+  printpuertos();
   cargaArchivo(inputString);
   
-  if(inputString == "eCaloventor"){
-  fill(255, 0, 0);
+  if(electrovalvula.equals("ON")){
+  fill(0, 255, 0);
   ellipse(710, 190, 70, 70);
   }
-  else if(inputString == "aCaloventor"){
-  fill(0, 255, 0);
+  if(electrovalvula.equals("OFF")){
+  fill(255, 0, 0);
   ellipse(710, 190, 70, 70);
   }
    
@@ -100,6 +102,7 @@ void draw(){
   }
   
   serialOut(); 
+  printpuertos();
 }
 
 boolean enRect(int x, int y, int ancho, int alto)  {
@@ -124,8 +127,24 @@ int cuatrobotones () {
   return 5;      
 }
  
+ void evento(){
+ if(inputString.equals("eCaloventor") || inputString.equals("aCaloventor")){
+     if(inputString.equals("eCaloventor")){
+       caloventor = "ON";
+     }else if(inputString.equals("aCaloventor")){
+       caloventor = "OFF";
+     }
+   }else if(inputString.equals("eElectrovalvula") || inputString.equals("aElectrovalvula")){
+        if(inputString.equals("eElectrovalvula")){
+         electrovalvula = "ON";
+     }else if(inputString.equals("aElectrovalvula")){
+         electrovalvula = "OFF";
+     }
+   }
+ }
+ 
  void serialIn(){  
- delay(50);
+ delay(100);
  while (myPort.available()>0){
    inputString = "";
    while(stringComplete != true){ 
@@ -141,14 +160,14 @@ int cuatrobotones () {
     }
     stringComplete = false;
   }
-  printpuertos();
+  println(inputString);
+  evento();
  }
  
  void serialOut(){
-  delay(50);
+  delay(400);
   myPort.write(outputString);
   myPort.write(ENTER);
-  printpuertos();
  }
  
  void printpuertos(){

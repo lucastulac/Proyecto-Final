@@ -89,7 +89,6 @@ void loop() {
 void serialIN() {
   while (Serial.available()) 
   {
-   digitalWrite(13,HIGH);
    inputString = ""; 
    while(stringComplete != true){ 
     char inChar = (char)Serial.read();
@@ -102,10 +101,10 @@ void serialIN() {
     }
     stringComplete = false;
   }
-  digitalWrite(13,LOW);
 }
 
 void serialOUT(){
+  delay(400);
   Serial.println(outputString);
 }
   
