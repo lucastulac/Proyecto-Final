@@ -23,7 +23,7 @@ void setup(){
   lines = new String[0];
   logo = loadImage("logo-utn.png");
   logo.resize(200, 50);
-  myPort = new Serial(this, "COM4", 9600);
+  myPort = new Serial(this, "COM3", 9600);
   tiempoUltimoRegistro = millis();
 
 }
@@ -54,13 +54,15 @@ void draw(){
   image(logo, 750, 450);
   serialIn();
   cargaArchivo(inputString);
-  
-  if(inputString == "eCaloventor"){
+   
+  println(inputString);
+     
+  if(inputString == "eElectrovalvula"){
   fill(0, 255, 0);
   ellipse(200, 190, 70, 70);
   text("Prueba",450,250);
   }
-  else if(inputString == "aCaloventor"){
+  else if(inputString == "aElectrovalvula"){
   fill(255, 0, 0);
   ellipse(200, 190, 70, 70);
   }
@@ -68,11 +70,11 @@ void draw(){
   serialIn();
   cargaArchivo(inputString);
   
-  if(inputString == "eElectrovalvula"){
+  if(inputString == "eCaloventor"){
   fill(255, 0, 0);
   ellipse(710, 190, 70, 70);
   }
-  else if(inputString == "aElectrovalvula"){
+  else if(inputString == "aCaloventor"){
   fill(0, 255, 0);
   ellipse(710, 190, 70, 70);
   }
@@ -129,7 +131,9 @@ int cuatrobotones () {
    while(stringComplete != true){ 
     char inChar = (char)myPort.read();
      if (inChar != '\n') {
+       if(inChar>='a' && inChar<='z' || inChar>='A' && inChar<='Z'){
       inputString += inChar;
+       }
      }
     else if (inChar == '\n') {
       stringComplete = true;
@@ -156,14 +160,14 @@ int cuatrobotones () {
  void cargaArchivo(String evento) {
   
   if (millis() - tiempoUltimoRegistro >= tiempoEntreRegistros) { 
-    Date hora = new Date();  // Obtener la fecha y la hora actual
+    Date hora = new Date();  // obtener la fecha y la hora actual
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  // Formatear la fecha y hora en un formato legible
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  // formatear la fecha y hora en un formato legible
     String horaformateada = dateFormat.format(hora);
-    String registro = horaformateada + " - " + evento;    // Construir la línea a escribir en el archivo
+    String registro = horaformateada + " - " + evento;    // construir la línea a escribir en el archivo
   
-    lines = append(lines, registro);    // Escribir la línea en el arreglo de strings 
-    saveStrings("registro-invernadero.txt", lines);  //Guardar el arreglo en el archivo
-    tiempoUltimoRegistro = millis();
+    lines = append(lines, registro);    // escribir la línea en el arreglo de strings 
+    saveStrings("registro-invernadero.txt", lines);  //guardar el arreglo en el archivo
+    tiempoUltimoRegistro = millis(); //reactualiza el tiempo del ultimo registro
   }
 }   
