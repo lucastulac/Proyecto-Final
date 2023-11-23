@@ -83,6 +83,8 @@ void loop() {
       delay(100);
     }
   }
+  //Serial.println(Objeto.inHumedad);
+  //Serial.println(Objeto.inTemperatura);
   delay(200);
 }
 
