@@ -1,21 +1,29 @@
 #include <dht.h>
-dht DHT;
 #define DHT11_PIN 8
+dht DHT;
 
 class Invernadero{  
   public:
-  float inHumedad;
-  float inTemperatura;           
+  int Humedad;
+  int Temperatura;
+  void setTemperatura();
+  void setHumedad(); 
+  void ConvertStrings();         
 }Objeto;
 
 String inputString = "sInformacion";
 String outputString = "";
+String temperatura = "";
+String humedad = "";
 bool stringComplete = false;
 int rElectrovalvula = 5;
 int rCaloventor = 6;
+
 void setup() {
   inputString.reserve(200);
   outputString.reserve(200);
+  temperatura.reserve(200);
+  humedad.reserve(200);
   Serial.begin(9600);
   pinMode(A1,INPUT);
   pinMode(rElectrovalvula,OUTPUT);
@@ -26,18 +34,18 @@ void setup() {
 
 void loop() {
 
-  DHT.read11(DHT11_PIN);
+  Objeto.setTemperatura();
+  Objeto.setHumedad();
+  Objeto.ConvertStrings();
   serialIN();                                    
-  Objeto.inTemperatura = DHT.temperature;    
-  Objeto.inHumedad = analogRead(A1);
 
   if(inputString=="sInformacion"){ //si en processing no se aprieta ningun boton, los reles los manejan los sensores
 
-    if(Objeto.inTemperatura < 30){ 
-    digitalWrite(rCaloventor,HIGH);
+    if(Objeto.Temperatura < 30){ 
+    digitalWrite(rCaloventor,HIGH);     //control del sensado de la temperatura
     outputString="eCaloventor";
     }
-    if(Objeto.inTemperatura>= 30){
+    if(Objeto.Temperatura>= 30){
     digitalWrite(rCaloventor,LOW);
     outputString="aCaloventor";
     }
@@ -45,11 +53,11 @@ void loop() {
   delay(100);
   serialOUT();
 
-    if(Objeto.inHumedad<200){ 
-    digitalWrite(rElectrovalvula,HIGH);
+    if(Objeto.Humedad<200){ 
+    digitalWrite(rElectrovalvula,HIGH);   //control del sensado de riego
     outputString="eElectrovalvula";
     }
-    if(Objeto.inHumedad>=200){
+    if(Objeto.Humedad>=200){
     digitalWrite(rElectrovalvula,LOW);
     outputString="aElectrovalvula";
     }
@@ -106,7 +114,30 @@ void serialIN() {
 }
 
 void serialOUT(){
-  delay(400);
+  delay(150); //era 400 antes
+  Serial.print('X');
   Serial.println(outputString);
+  delay(150);
+  Serial.println(temperatura);
+  delay(150);
+  Serial.println(humedad);
 }
-  
+
+void Invernadero::setHumedad(){  
+  Objeto.Humedad = analogRead(A1);
+}
+
+void Invernadero::setTemperatura(){
+  DHT.read11(DHT11_PIN);
+  Objeto.Temperatura = DHT.temperature;  
+}
+
+void Invernadero::ConvertStrings(){
+  temperatura = "T";
+  humedad = "H";
+  temperatura += Objeto.Temperatura;
+  humedad += Objeto.Humedad;
+}
+
+
+
