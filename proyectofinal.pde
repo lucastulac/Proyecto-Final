@@ -96,7 +96,7 @@ void draw(){
   }
   
   serialOut(); 
-  //printpuertos();
+ // printpuertos();
 }
 
 boolean enRect(int x, int y, int ancho, int alto)  {
@@ -142,7 +142,18 @@ int cuatrobotones () {
  delay(150);
  inChar = ' ';
  while (myPort.available()>0){
-   char inChar = (char)myPort.read();       
+   char inChar = (char)myPort.read(); 
+       if(inChar=='T'){
+         temperatura = " ";
+          while(stringComplete != true){
+            if(inChar!='\n'){ 
+              inChar = (char)myPort.read();
+              temperatura += inChar;
+            }else if(inChar == '\n'){
+              stringComplete = true;
+            }
+          }
+       }
        if(inChar=='X'){ 
           inputString = " ";
           while(stringComplete != true){
@@ -155,23 +166,12 @@ int cuatrobotones () {
             }
           }      
        }
-       else if(inChar=='H'){ //humedad 
-          humedad = "";
+       if(inChar=='H'){ //humedad 
+          humedad = " ";
           while(stringComplete != true){
             if(inChar!='\n'){ 
               inChar = (char)myPort.read();
                humedad += inChar;
-            }else if(inChar == '\n'){
-              stringComplete = true;
-            }
-          }
-       }
-       else if(inChar=='T'){
-         temperatura = "";
-          while(stringComplete != true){
-            if(inChar!='\n'){ 
-              inChar = (char)myPort.read();
-              temperatura += inChar;
             }else if(inChar == '\n'){
               stringComplete = true;
             }

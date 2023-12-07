@@ -115,10 +115,10 @@ void serialIN() {
 
 void serialOUT(){
   delay(150); //era 400 antes
+  Serial.println(temperatura);
+  delay(150);
   Serial.print('X');
   Serial.println(outputString);
-  delay(150);
-  Serial.println(temperatura);
   delay(150);
   Serial.println(humedad);
 }
