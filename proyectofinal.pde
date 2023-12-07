@@ -2,12 +2,13 @@ import processing.serial.*;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-PImage logo;
+PImage logo,medidor,agua; //declarar la variable de una imagen
 char inChar;
 int nivel;
 String temperatura = "";
 String humedad = "";
-String inputString = "";        
+String inputString = "";   
+String inString = "";
 String outputString = "";   
 boolean stringComplete = false;
 String electrovalvula = "";
@@ -27,6 +28,10 @@ void setup(){
   lines = new String[0];
   logo = loadImage("logo-utn.png");
   logo.resize(200, 50);
+  medidor = loadImage("medidor2.png");
+  medidor.resize(200,200);
+  agua = loadImage("valvula.png");
+  agua.resize(200,200);
   myPort = new Serial(this, "COM4", 9600);
   tiempoUltimoRegistro = millis();
 
@@ -35,11 +40,14 @@ void setup(){
 void draw(){
   background(245, 245, 220);
   
+  manometro();
+  valvula();
+  
   textSize(35);
   fill(0, 0, 0);
-  text("INVERNADERO", 300, 50);
-  text("CALEFACCION",70,140);        //dibujo de los textos
-  text("RIEGO",650,140); 
+  text("INVERNADERO", 350, 50); 
+  text("CALEFACCION",100,90);  //dibujo de los textos
+  text("RIEGO",650,90); 
   
   line(100,285,800,285);
   
@@ -63,31 +71,10 @@ void draw(){
   image(logo, 750, 450);
   
   serialIn();
-  //printpuertos();
-  cargaArchivo(inputString);
-     
-  if(caloventor.equals("ON")){
-  fill(0, 255, 0);
-  ellipse(200, 210, 70, 70);
-  }
-  if(caloventor.equals("OFF")){
-  fill(255, 0, 0);
-  ellipse(200, 210, 70, 70);
-  }
-  
+  cargaArchivo(inputString); 
   serialIn();
-  //printpuertos();
   cargaArchivo(inputString);
-  
-  if(electrovalvula.equals("ON")){
-  fill(0, 255, 0);
-  ellipse(710, 210, 70, 70);
-  }
-  if(electrovalvula.equals("OFF")){
-  fill(255, 0, 0);
-  ellipse(710, 210, 70, 70);
-  }
-   
+
   nivel=cuatrobotones();
   switch(nivel){
 
@@ -109,7 +96,7 @@ void draw(){
   }
   
   serialOut(); 
-  printpuertos();
+  //printpuertos();
 }
 
 boolean enRect(int x, int y, int ancho, int alto)  {
@@ -157,7 +144,7 @@ int cuatrobotones () {
  while (myPort.available()>0){
    char inChar = (char)myPort.read();       
        if(inChar=='X'){ 
-          inputString = "";
+          inputString = " ";
           while(stringComplete != true){
             if(inChar!='\n'){ 
               inChar = (char)myPort.read();
@@ -166,7 +153,7 @@ int cuatrobotones () {
               evento();
               stringComplete = true;
             }
-          }
+          }      
        }
        else if(inChar=='H'){ //humedad 
           humedad = "";
@@ -225,3 +212,58 @@ int cuatrobotones () {
     tiempoUltimoRegistro = millis(); //reactualiza el tiempo del ultimo registro
   }
 }   
+
+void manometro(){
+  
+  image(medidor,80,100);
+  
+  fill(0,0,0); //datos del medidor temperatura
+  ellipse(180,200,50,50);
+  textSize(12);
+  text("0°C",146,245);
+  text("10°C",130,210);
+  text("20°C",138,182);
+  text("30°C",168,170);
+  text("40°C",198,182);
+  text("50°C",205,210);
+  
+  temperatura = temperatura.trim();
+  int Ntemperatura = int(temperatura);
+  String panel = temperatura;
+  textSize(19);
+  text(panel+="°C",265,133);
+
+  intervalo(132,246,0,0,Ntemperatura);
+  intervalo(114,203,1,15,Ntemperatura);
+  intervalo(133,153,15,22,Ntemperatura);
+  intervalo(155,139,22,28,Ntemperatura);      
+  intervalo(180,135,28,32,Ntemperatura);
+  intervalo(206,139,32,38,Ntemperatura);
+  intervalo(227,154,38,200,Ntemperatura);
+
+  //println(mouseX,mouseY);
+}
+
+void intervalo(int X,int Y,int min,int max,int Ntemperatura){
+  if(Ntemperatura>min && Ntemperatura<=max && caloventor.equals("ON")){
+  fill(0,255,0);
+  ellipse(X,Y,13,13);
+  }else if(Ntemperatura>min && Ntemperatura<=max && caloventor.equals("OFF")){
+  fill(255,0,0);
+  ellipse(X,Y,13,13);
+  }
+}
+
+void valvula(){
+  image(agua,590,100);
+  fill(0,100,255); //medidor de agua
+  rect(601,221,10,60);
+  if(electrovalvula.equals("ON")){
+    rect(768,221,10,60);  //cuando se enciende el riego se "descomenta"
+    fill(0,255,0);    //riego encendido
+    rect(655,176,69,10);
+  }else if(electrovalvula.equals("OFF"))
+    {fill(255,0,0);    //riego apagado
+    rect(655,176,69,10);
+  } 
+}
