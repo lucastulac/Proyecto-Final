@@ -6,11 +6,15 @@ PImage logo,medidor,agua; //declarar la variable de una imagen
 char inChar;
 int nivel;
 String temperatura = "";
+int Ntemperatura;
 String humedad = "";
 String inputString = "";   
 String inString = "";
-String outputString = "";   
+String outputString = "";  
+float x;
+float y;
 boolean stringComplete = false;
+String temperaturaClean = "";
 String electrovalvula = "";
 String caloventor = "";
 String lines[];
@@ -40,7 +44,7 @@ void setup(){
 void draw(){
   background(245, 245, 220);
   
-  manometro();
+  termometroanalogico();
   valvula();
   
   textSize(35);
@@ -49,7 +53,7 @@ void draw(){
   text("CALEFACCION",100,90);  //dibujo de los textos
   text("RIEGO",650,90); 
   
-  line(100,285,800,285);
+  line(100,305,800,305);
   
   textSize(25);
   text("CONTROL MANUAL",310,335);
@@ -96,7 +100,7 @@ void draw(){
   }
   
   serialOut(); 
- // printpuertos();
+  //printpuertos();
 }
 
 boolean enRect(int x, int y, int ancho, int alto)  {
@@ -143,17 +147,22 @@ int cuatrobotones () {
  inChar = ' ';
  while (myPort.available()>0){
    char inChar = (char)myPort.read(); 
-       if(inChar=='T'){
-         temperatura = " ";
-          while(stringComplete != true){
+       if(inChar=='T'){      //inChar primero se filtra entre T(temperatura),X(estado del rele) o H(int humedad)
+         temperatura = " ";  //eso decide en que cadena se guarda lo leido del puerto serie
+          while(stringComplete != true){    //La T,X,H no se guardan dentro de la cadena, al igual que el \n
             if(inChar!='\n'){ 
               inChar = (char)myPort.read();
               temperatura += inChar;
+              
             }else if(inChar == '\n'){
               stringComplete = true;
+              
             }
           }
-       }
+          if(!temperatura.trim().isEmpty()){   //Debugueado, la variable temperatura se guardaba vacia
+          temperaturaClean = temperatura;      //la misma cadena temperatura leida del puerto serie se filtra de
+          }          //espacios blancos con trim, y isEmpty se usa como condicional de si esta vacia o no
+       }            //para guardarse dentro de "temperaturaClean" que se usa luego para el draw
        if(inChar=='X'){ 
           inputString = " ";
           while(stringComplete != true){
@@ -195,7 +204,9 @@ int cuatrobotones () {
  text("Output: "+outputString,30,465); 
  text("Input: "+inputString,30,440);
  text("Humedad: "+humedad,250,440);
- text("Temperatura: "+temperatura,250,465);
+ temperaturaClean = temperaturaClean.trim();
+ text("Temperatura: "+temperaturaClean,250,465);
+ println(mouseX,mouseY);
  }
  
  void cargaArchivo(String evento) {
@@ -213,45 +224,24 @@ int cuatrobotones () {
   }
 }   
 
-void manometro(){
+void termometroanalogico(){
   
-  image(medidor,80,100);
-  
+  //image(medidor,80,100);
+  circunferencia();
   fill(0,0,0); //datos del medidor temperatura
-  ellipse(180,200,50,50);
+  //ellipse(180,200,50,50);
   textSize(12);
-  text("0°C",146,245);
-  text("10°C",130,210);
-  text("20°C",138,182);
-  text("30°C",168,170);
-  text("40°C",198,182);
-  text("50°C",205,210);
+  text("0°C",157,197);
+  text("12°C",170,162);
+  text("25°C",210,144);
+  text("37°C",246,162);
+  text("50°C",260,197);
   
-  temperatura = temperatura.trim();
-  int Ntemperatura = int(temperatura);
-  String panel = temperatura;
+  temperaturaClean = temperaturaClean.trim(); //segunda validacion
+  Ntemperatura = int(temperaturaClean);
+  String panel = temperaturaClean;
   textSize(19);
-  text(panel+="°C",265,133);
-
-  intervalo(132,246,0,0,Ntemperatura);
-  intervalo(114,203,1,15,Ntemperatura);
-  intervalo(133,153,15,22,Ntemperatura);
-  intervalo(155,139,22,28,Ntemperatura);      
-  intervalo(180,135,28,32,Ntemperatura);
-  intervalo(206,139,32,38,Ntemperatura);
-  intervalo(227,154,38,200,Ntemperatura);
-
-  //println(mouseX,mouseY);
-}
-
-void intervalo(int X,int Y,int min,int max,int Ntemperatura){
-  if(Ntemperatura>min && Ntemperatura<=max && caloventor.equals("ON")){
-  fill(0,255,0);
-  ellipse(X,Y,13,13);
-  }else if(Ntemperatura>min && Ntemperatura<=max && caloventor.equals("OFF")){
-  fill(255,0,0);
-  ellipse(X,Y,13,13);
-  }
+  text(panel+="°C",285,133);
 }
 
 void valvula(){
@@ -266,4 +256,36 @@ void valvula(){
     {fill(255,0,0);    //riego apagado
     rect(655,176,69,10);
   } 
+}
+
+void circunferencia(){
+  
+  int radio = 70;
+  int centerX = 220;
+  int centerY = 198;
+  float theta;
+  float puntoSize = 10;
+  noFill();
+  strokeWeight(3);
+  ellipse(centerX,centerY,radio*2+30,radio*2+30);
+  ellipse(centerX,centerY,radio*2,radio*2);
+  strokeWeight(1);
+  theta = map(Ntemperatura, 0, 50, PI, 2*PI);
+  // Obtener las coordenadas del borde del círculo y dibujar puntos
+    strokeWeight(3);
+    line(centerX,centerY,x,y);
+    if(Ntemperatura>=30 || caloventor.equals("OFF")){
+    fill(255,0,0);
+    x = centerX + radio * cos(theta);
+    y = centerY + radio * sin(theta);
+    ellipse(x,y,puntoSize,puntoSize);
+    }else if(Ntemperatura<30 || caloventor.equals("ON")){
+    fill(0,255,0);
+    x = centerX + radio * cos(theta);
+    y = centerY + radio * sin(theta);
+    ellipse(x,y,puntoSize,puntoSize);
+    }
+    
+ 
+  
 }

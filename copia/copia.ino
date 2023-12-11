@@ -50,7 +50,7 @@ void loop() {
     outputString="aCaloventor";
     }
 
-  delay(100);
+  
   serialOUT();
 
     if(Objeto.Humedad<200){ 
