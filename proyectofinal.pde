@@ -2,7 +2,7 @@ import processing.serial.*;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-PImage logo,medidor,agua; //declarar la variable de una imagen
+PImage logo,alerta,agua; //declarar la variable de una imagen
 char inChar;
 int nivel;
 String temperatura = "";
@@ -32,8 +32,8 @@ void setup(){
   lines = new String[0];
   logo = loadImage("logo-utn.png");
   logo.resize(200, 50);
-  medidor = loadImage("medidor2.png");
-  medidor.resize(200,200);
+  alerta = loadImage("alerta.png");
+  alerta.resize(24,24);
   agua = loadImage("valvula.png");
   agua.resize(200,200);
   myPort = new Serial(this, "COM3", 9600);
@@ -100,7 +100,7 @@ void draw(){
   }
   
   serialOut(); 
-  //printpuertos();
+ // printpuertos();
 }
 
 boolean enRect(int x, int y, int ancho, int alto)  {
@@ -227,15 +227,17 @@ int cuatrobotones () {
 void termometroanalogico(){
   
   //image(medidor,80,100);
+ 
   circunferencia();
   fill(0,0,0); //datos del medidor temperatura
   //ellipse(180,200,50,50);
   textSize(12);
-  text("0°C",157,197);
-  text("12°C",170,162);
-  text("25°C",210,144);
-  text("37°C",246,162);
-  text("50°C",260,197);
+  strokeWeight(2);
+  text("0°",140,197);
+  text("12°",157,156);
+  text("25°",210,127);
+  text("37°",265,156);
+  text("50°",284,197);
   
   temperaturaClean = temperaturaClean.trim(); //segunda validacion
   Ntemperatura = int(temperaturaClean);
@@ -255,19 +257,24 @@ void valvula(){
   }else if(electrovalvula.equals("OFF"))
     {fill(255,0,0);    //riego apagado
     rect(655,176,69,10);
-  } 
+  }
+  
+  if(Ntemperatura>=40){
+    image(alerta,332,114);
+  }
+  
 }
 
 void circunferencia(){
   
-  int radio = 70;
+  int radio = 45;
   int centerX = 220;
   int centerY = 198;
   float theta;
   float puntoSize = 10;
   noFill();
   strokeWeight(3);
-  ellipse(centerX,centerY,radio*2+30,radio*2+30);
+  ellipse(centerX,centerY,70*2+30,70*2+30);
   ellipse(centerX,centerY,radio*2,radio*2);
   strokeWeight(1);
   theta = map(Ntemperatura, 0, 50, PI, 2*PI);
