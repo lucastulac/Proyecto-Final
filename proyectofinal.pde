@@ -36,7 +36,7 @@ void setup(){
   medidor.resize(200,200);
   agua = loadImage("valvula.png");
   agua.resize(200,200);
-  myPort = new Serial(this, "COM4", 9600);
+  myPort = new Serial(this, "COM3", 9600);
   tiempoUltimoRegistro = millis();
 
 }

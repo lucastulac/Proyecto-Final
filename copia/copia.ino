@@ -3,12 +3,15 @@
 dht DHT;
 
 class Invernadero{  
-  public:
+  private:
   int Humedad;
   int Temperatura;
+  public:
   void setTemperatura();
   void setHumedad(); 
-  void ConvertStrings();         
+  void ConvertStrings();  
+  int getTemperatura();
+  int getHumedad();       
 }Objeto;
 
 String inputString = "sInformacion";
@@ -18,6 +21,8 @@ String humedad = "";
 bool stringComplete = false;
 int rElectrovalvula = 5;
 int rCaloventor = 6;
+int Temperatura;
+int Humedad;
 
 void setup() {
   inputString.reserve(200);
@@ -37,15 +42,17 @@ void loop() {
   Objeto.setTemperatura();
   Objeto.setHumedad();
   Objeto.ConvertStrings();
+  Temperatura = Objeto.getTemperatura();
+  Humedad = Objeto.getHumedad();
   serialIN();                                    
 
   if(inputString=="sInformacion"){ //si en processing no se aprieta ningun boton, los reles los manejan los sensores
 
-    if(Objeto.Temperatura < 30){ 
+    if(Temperatura < 30){ 
     digitalWrite(rCaloventor,HIGH);     //control del sensado de la temperatura
     outputString="eCaloventor";
     }
-    if(Objeto.Temperatura>= 30){
+    if(Temperatura>= 30){
     digitalWrite(rCaloventor,LOW);
     outputString="aCaloventor";
     }
@@ -53,11 +60,11 @@ void loop() {
   
   serialOUT();
 
-    if(Objeto.Humedad<200){ 
+    if(Humedad<200){ 
     digitalWrite(rElectrovalvula,HIGH);   //control del sensado de riego
     outputString="eElectrovalvula";
     }
-    if(Objeto.Humedad>=200){
+    if(Humedad>=200){
     digitalWrite(rElectrovalvula,LOW);
     outputString="aElectrovalvula";
     }
@@ -137,6 +144,14 @@ void Invernadero::ConvertStrings(){
   humedad = "H";
   temperatura += Objeto.Temperatura;
   humedad += Objeto.Humedad;
+}
+
+int Invernadero::getHumedad(){
+  return Objeto.Humedad;
+}
+
+int Invernadero::getTemperatura(){
+  return Objeto.Temperatura;
 }
 
 
