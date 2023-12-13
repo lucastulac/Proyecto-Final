@@ -36,7 +36,7 @@ void setup(){
   alerta.resize(24,24);
   agua = loadImage("valvula.png");
   agua.resize(200,200);
-  myPort = new Serial(this, "COM3", 9600);
+  myPort = new Serial(this, "COM4", 9600);
   tiempoUltimoRegistro = millis();
 
 }
@@ -103,7 +103,7 @@ void draw(){
  // printpuertos();
 }
 
-boolean enRect(int x, int y, int ancho, int alto)  {
+boolean enRect(int x, int y, int ancho, int alto)  {  //chequea si el mousse esta sobre un boton
   if (mouseX >= x && mouseX <= x+ancho && 
       mouseY >= y && mouseY <= y+alto) {
     return true;
@@ -112,7 +112,7 @@ boolean enRect(int x, int y, int ancho, int alto)  {
   }
 }
 
-int cuatrobotones () {
+int cuatrobotones () {   //decide en que boton apretas
   if (enRect (140,365,15,15) && mousePressed ){    //encendido del caloventor
   return 1;
 }else if (enRect (140,395,15,15) && mousePressed ){   //apagado del caloventor
@@ -125,7 +125,7 @@ int cuatrobotones () {
   return 5;      
 }
  
- void evento(){
+ void evento(){      //separa la inputstring en la cadena caloventor o electrovalvula
   String cleanString = inputString.trim().toLowerCase(); //trim elimina espacios en blanco, toLowerCase convierte todo a min
  if(cleanString.equals("ecaloventor") || cleanString.equals("acaloventor")){
      if(cleanString.equals("ecaloventor")){
@@ -199,7 +199,7 @@ int cuatrobotones () {
   myPort.write(ENTER);
  }
  
- void printpuertos(){
+ void printpuertos(){      //funcion de parametros para el desarrollador
  fill(0,0,0);
  text("Output: "+outputString,30,465); 
  text("Input: "+inputString,30,440);
@@ -225,12 +225,9 @@ int cuatrobotones () {
 }   
 
 void termometroanalogico(){
-  
-  //image(medidor,80,100);
  
   circunferencia();
   fill(0,0,0); //datos del medidor temperatura
-  //ellipse(180,200,50,50);
   textSize(12);
   strokeWeight(2);
   text("0°",140,197);
@@ -244,25 +241,25 @@ void termometroanalogico(){
   String panel = temperaturaClean;
   textSize(19);
   text(panel+="°C",285,133);
+  
+  if(Ntemperatura>=40){      //alerta de altas temp. >40
+  image(alerta,332,114);
+  }
 }
 
 void valvula(){
   image(agua,590,100);
   fill(0,100,255); //medidor de agua
   rect(601,221,10,60);
+  
   if(electrovalvula.equals("ON")){
-    rect(768,221,10,60);  //cuando se enciende el riego se "descomenta"
+    rect(768,221,10,60);  
     fill(0,255,0);    //riego encendido
     rect(655,176,69,10);
-  }else if(electrovalvula.equals("OFF"))
-    {fill(255,0,0);    //riego apagado
+  }else if(electrovalvula.equals("OFF")){
+    fill(255,0,0);    //riego apagado
     rect(655,176,69,10);
   }
-  
-  if(Ntemperatura>=40){
-    image(alerta,332,114);
-  }
-  
 }
 
 void circunferencia(){
@@ -272,27 +269,28 @@ void circunferencia(){
   int centerY = 198;
   float theta;
   float puntoSize = 10;
+  
   noFill();
   strokeWeight(3);
-  ellipse(centerX,centerY,70*2+30,70*2+30);
-  ellipse(centerX,centerY,radio*2,radio*2);
-  strokeWeight(1);
-  theta = map(Ntemperatura, 0, 50, PI, 2*PI);
-  // Obtener las coordenadas del borde del círculo y dibujar puntos
-    strokeWeight(3);
-    line(centerX,centerY,x,y);
-    if(Ntemperatura>=30 || caloventor.equals("OFF")){
-    fill(255,0,0);
-    x = centerX + radio * cos(theta);
-    y = centerY + radio * sin(theta);
-    ellipse(x,y,puntoSize,puntoSize);
-    }else if(Ntemperatura<30 || caloventor.equals("ON")){
-    fill(0,255,0);
-    x = centerX + radio * cos(theta);
-    y = centerY + radio * sin(theta);
-    ellipse(x,y,puntoSize,puntoSize);
-    }
-    
- 
+  ellipse(centerX,centerY,70*2+30,70*2+30);  //elipse mas grande
+  ellipse(centerX,centerY,radio*2,radio*2);  //elipse mas chica
   
+  strokeWeight(1);
+  theta = map(Ntemperatura, 0, 50, PI, 2*PI); //mapeo del valor de 0 a 50 del Ntemperatura a una escala de PI a 2PI 
+  
+  strokeWeight(3);                          //seria el angulo de inclinacion, mientras mayor sea Ntemperatura mayor sera el angulo
+  line(centerX,centerY,x,y);
+  
+  if(Ntemperatura>=30 || caloventor.equals("OFF")){
+  fill(255,0,0);
+  x = centerX + radio * cos(theta);             //se usan coord. polares para determinar la ubicacion del punto
+  y = centerY + radio * sin(theta);            //solo cambia el color del circulo que indica el estado del rele
+  ellipse(x,y,puntoSize,puntoSize);            //rojo
+  }
+  else if(Ntemperatura<30 || caloventor.equals("ON")){
+  fill(0,255,0);
+  x = centerX + radio * cos(theta);            //verde
+  y = centerY + radio * sin(theta);
+  ellipse(x,y,puntoSize,puntoSize);
+  }
 }
